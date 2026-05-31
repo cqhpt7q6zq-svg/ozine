@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Өзіңе оралу</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d1412; color: #e8f0ec; font-family: Georgia, serif; min-height: 100vh; }
+
+  #cover, #book, #done { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 28px; text-align: center; }
+  #cover { display: flex; }
+
+  .circle { width: 160px; height: 160px; border-radius: 50%; border: 2px solid #7eb89a; background: rgba(126,184,154,0.07); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 28px; gap: 4px; }
+  .circle .label { font-size: 10px; letter-spacing: 3px; color: #6b8c7d; }
+  .circle .title { font-size: 24px; font-weight: bold; line-height: 1.25; color: #a8d5bc; }
+  .circle .sub { font-size: 9px; color: #6b8c7d; margin-top: 4px; letter-spacing: 1px; }
+
+  .taglines { margin-bottom: 24px; }
+  .taglines div { font-style: italic; line-height: 2; }
+  .taglines .main { color: #a8d5bc; font-size: 17px; }
+  .taglines .muted { color: #6b8c7d; font-size: 13px; }
+
+  .desc { color: #6b8c7d; font-size: 13px; max-width: 290px; line-height: 1.8; margin-bottom: 28px; }
+
+  .btn-primary { background: #7eb89a; color: #0d1412; border: none; border-radius: 30px; padding: 14px 44px; font-size: 15px; font-weight: bold; cursor: pointer; letter-spacing: 1px; }
+  .btn-secondary { background: transparent; color: #6b8c7d; border: 1px solid #1a2b25; border-radius: 20px; padding: 8px 20px; font-size: 12px; cursor: pointer; margin-top: 12px; }
+  .btn-ghost { background: transparent; color: #6b8c7d; border: 1px solid #1a2b25; border-radius: 24px; padding: 10px 24px; font-size: 14px; cursor: pointer; }
+  .btn-next { background: #7eb89a; color: #0d1412; border: none; border-radius: 24px; padding: 10px 24px; font-size: 14px; font-weight: bold; cursor: pointer; }
+
+  #all-list { margin-top: 20px; max-width: 340px; text-align: left; }
+  #all-list div { padding: 8px 0; border-bottom: 1px solid #1a2b25; color: #8aad9a; font-size: 13px; line-height: 1.6; }
+  #all-list span { color: #7eb89a; margin-right: 8px; }
+
+  /* BOOK */
+  #book { display: none; padding: 0; }
+  .topbar { padding: 18px 22px 0; display: flex; align-items: center; gap: 12px; width: 100%; }
+  .progress-bg { flex: 1; height: 2px; background: #1a2b25; border-radius: 2px; }
+  .progress-fill { height: 100%; background: #7eb89a; border-radius: 2px; transition: width 0.4s; }
+  .prog-text { font-size: 11px; color: #6b8c7d; white-space: nowrap; }
+
+  .content { flex: 1; display: flex; flex-direction: column; padding: 28px 22px 12px; width: 100%; }
+  .q-label { color: #7eb89a; font-size: 11px; letter-spacing: 3px; margin-bottom: 10px; }
+  .q-text { font-size: 21px; font-weight: bold; line-height: 1.55; margin-bottom: 30px; min-height: 72px; }
+
+  .write-wrap { position: relative; flex: 1; }
+  .lines { position: absolute; left: 0; right: 0; top: 0; bottom: 0; pointer-events: none; }
+  textarea { width: 100%; min-height: 400px; background: transparent; border: none; outline: none; resize: none; color: #d4ede0; font-size: 18px; line-height: 40px; font-family: Georgia, serif; padding-top: 40px; caret-color: #7eb89a; }
+  .saved { color: #6b8c7d; font-size: 11px; text-align: right; margin-top: 4px; }
+
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 22px 30px; width: 100%; }
+  .home-btn { background: transparent; color: #6b8c7d; border: none; font-size: 18px; cursor: pointer; }
+
+  /* DONE */
+  #done { display: none; }
+  .done-icon { font-size: 48px; margin-bottom: 20px; }
+  .done-title { font-size: 24px; font-weight: bold; color: #a8d5bc; margin-bottom: 16px; }
+  .done-desc { color: #6b8c7d; font-size: 14px; max-width: 280px; line-height: 1.9; }
+
+  /* SAVE MODAL */
+  #save-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 99; }
+  #save-modal.open { display: flex; }
+  .modal-box { background: #111a17; border: 1px solid #1a2b25; border-radius: 16px; padding: 28px 24px; max-width: 320px; width: 90%; text-align: center; }
+  .modal-box h3 { color: #a8d5bc; margin-bottom: 12px; font-size: 18px; }
+  .modal-box p { color: #6b8c7d; font-size: 13px; line-height: 1.7; margin-bottom: 20px; }
+  .modal-btns { display: flex; flex-direction: column; gap: 10px; }
+  .modal-btns button { border-radius: 24px; padding: 12px; font-size: 14px; cursor: pointer; border: none; font-weight: bold; }
+  .m-primary { background: #7eb89a; color: #0d1412; }
+  .m-secondary { background: transparent; color: #6b8c7d; border: 1px solid #1a2b25 !important; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div id="cover">
+  <div class="circle">
+    <div class="label">КІТАП</div>
+    <div class="title">Өзіңе<br>оралу</div>
+    <div class="sub">тек саған керек</div>
+  </div>
+  <div class="taglines">
+    <div class="muted">Бәрі өтеді.</div>
+    <div class="main">Сен қаласың.</div>
+    <div class="muted">Өзіңе оралуға уақыт келді.</div>
+  </div>
+  <p class="desc">Әр бетте бір сұрақ. Жауабыңды өзің жаз.<br>Ауыр сезімдер — сөзге айналғанда жеңілейді.</p>
+  <button class="btn-primary" onclick="startBook()">Бастау 🌱</button>
+  <button class="btn-secondary" onclick="toggleList()">Барлық сұрақтарды көру</button>
+  <div id="all-list" style="display:none"></div>
+</div>
+
+<!-- BOOK -->
+<div id="book" style="display:none;flex-direction:column;align-items:center;min-height:100vh;">
+  <div class="topbar">
+    <div class="progress-bg"><div class="progress-fill" id="prog-fill"></div></div>
+    <div class="prog-text" id="prog-text"></div>
+  </div>
+  <div class="content">
+    <div class="q-label" id="q-label"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="write-wrap">
+      <canvas class="lines" id="line-canvas"></canvas>
+      <textarea id="answer-box" placeholder="Осында жаз... ешкім оқымайды, тек сен 🌿" oninput="saveAnswer()"></textarea>
+    </div>
+    <div class="saved" id="saved-tag" style="display:none">✓ сақталды</div>
+  </div>
+  <div class="nav">
+    <button class="btn-ghost" onclick="go(-1)">← Артқа</button>
+    <button class="home-btn" onclick="goHome()">🏠</button>
+    <button class="btn-next" id="next-btn" onclick="go(1)">Келесі →</button>
+  </div>
+</div>
+
+<!-- DONE -->
+<div id="done" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;text-align:center;">
+  <div class="done-icon">🌱</div>
+  <div class="done-title">Сен оралдың.</div>
+  <p class="done-desc">91 сұраққа жауап бердің.<br>Бұл — өзіңе деген ең үлкен сыйлық.</p>
+  <button class="btn-primary" style="margin-top:28px;" onclick="goHome()">Мұқабаға оралу</button>
+  <button class="btn-secondary" onclick="downloadAnswers()">Жауаптарды жүктеу 📄</button>
+</div>
+
+<!-- SAVE MODAL -->
+<div id="save-modal">
+  <div class="modal-box">
+    <h3>Жауаптарды сақтау</h3>
+    <p>Жауаптарыңды телефонға .txt файл ретінде жүктей аласың. Ешқайда жіберілмейді — тек өзіңде қалады.</p>
+    <div class="modal-btns">
+      <button class="m-primary" onclick="doDownload()">Жүктеу 📥</button>
+      <button class="m-secondary" onclick="closeModal()">Жабу</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  "Қазір жүрегіңде не ауырып тұр?",
+  "Кімге айта алмай жүрген сөзің бар?",
+  "Ең соңғы рет шынымен жылаған кезің қашан болды?",
+  "Өзіңді жалғыз сезінетін сәттер қандай?",
+  "Кімнен кешірім сұрағың келеді?",
+  "Кімді кешіре алмай жүрсің?",
+  "Өзіңді кешіре аласың ба? Неге?",
+  "Қандай сөз саған ең көп ауырт­қан?",
+  "Ешкім білмейтін қандай қорқыныш бар ішіңде?",
+  "Өткенде не нәрсені өзгерткің келер еді?",
+  "Саған ең керек кезінде кім болмады?",
+  "Қандай сезімді ешкімге көрсете алмайсың?",
+  "Өзіңе ең жиі айтатын жаман сөзің қандай?",
+  "Шынымен бақытты болған кезің қашан еді?",
+  "Қандай арманыңнан бас тарттың?",
+  "Сені ең жақсы түсінетін адам кім?",
+  "Жүрегіңде кімге деген өкпе бар?",
+  "Өзіңді жақсы көре аласың ба? Неге?",
+  "Қандай жағдайда өзіңді шын мәнінде сезінесің?",
+  "Соңғы рет өзіңе уақыт бергенің қашан?",
+  "Не нәрсе сенің күшіңді алып кетеді?",
+  "Не нәрсе сенің күшіңді қайтарады?",
+  "Ең ауыр болған күнің қандай болды?",
+  "Сол күні не нәрсе сені ұстап тұрды?",
+  "Өзіңе айтқың келетін үш сөз қандай?",
+  "Кімнің кетуі саған өте ауыр тиді?",
+  "Кімнің болуы саған жылу береді?",
+  "Өзіңді не нәрсемен жұбатасың?",
+  "Ішіңде ұзақ уақыт жасырған не бар?",
+  "Өзіңе деген сенімін жоғалтқан кезің болды ма?",
+  "Ол кезде не болды?",
+  "Қазір нені ең қатты сағынасың?",
+  "Саған ешкім айтпаған бірақ есту қажет сөз не?",
+  "Өмірдің қай кезеңіне оралғың келеді?",
+  "Қандай шешімің саған қиын тиді?",
+  "Кімге «жетіспедің» деп айтқың келеді?",
+  "Өзіңді ренжіткен жағдай қандай болды?",
+  "Соны қалай өткіздің?",
+  "Жылай алмай қалған сәтің болды ма?",
+  "Ол сезімді қайда жасырдың?",
+  "Саған ең маңызды нәрсе не?",
+  "Соны қорғай аласың ба?",
+  "Өзіңе деген ашуың бар ма? Неге?",
+  "Өзіңе кешірім хаты жазсаң не дерің?",
+  "Сені ешкім түсінбейді деп ойлайсың ба?",
+  "Жалғыздық деген саған не?",
+  "Адамдарға сенуден қашан қорқа бастадың?",
+  "Сол уақытта не болды?",
+  "Өзіңді бақытты сезінуге лайықсың деп ойлайсың ба?",
+  "Ең ауыр тастаған адамың кім болды?",
+  "Сол жараны қазір де сезесің бе?",
+  "Жүрегіңде неден аяғың сырғанайды?",
+  "Өзіңді жұбатуды білесің бе?",
+  "Қандай сөз саған күш береді?",
+  "Өмірдегі ең үлкен сабағың не?",
+  "Соны қиын жолмен үйрендің бе?",
+  "Сені ешкім сүймейді деп сезінген кезің болды ма?",
+  "Ол кезде өзіңе не дедің?",
+  "Қазір өзіңді қалай сипаттар едің?",
+  "Болашақтан не нәрсені күтесің?",
+  "Ең үлкен қорқыныш не: жалғыз қалу ма, жоғалту ма, немесе сүймеу ма?",
+  "Өзіңе ең қиын айтылатын сөз не?",
+  "Ішіңде жыламай тұрған не бар?",
+  "Сені ешкім байқамайды деп ойлаған кезің болды ма?",
+  "Ол сезімді қайда алып жүрдің?",
+  "Өзіңді ең бақытты сезінген жерің қайда?",
+  "Кімнің жанында болсаң өзіңсің?",
+  "Кімнің алдында маска киесің?",
+  "Неге сол маскасыз бола алмайсың?",
+  "Өзіңнің қандай қасиетіңді жақсы көресің?",
+  "Өзіңнің қандай жағыңнан ұялғың келеді?",
+  "Соны өзгертуге болады деп ойлайсың ба?",
+  "Кімге «сенің кетуің маған ауыр тиді» деп айтқың келеді?",
+  "Кімге «рахмет, мен соны ұмытпаймын» деп айтқың келеді?",
+  "Өзіңе ең ұзақ ұстаған ашуың не үшін?",
+  "Ол ашуды жіберіп жіберсең не өзгерер еді?",
+  "Өзіңе деген жанашырлықты қалай анықтайсың?",
+  "Жүрегіңдегі бос орынды не толтырады?",
+  "Қандай сезімді ешкімге сезінгізбейсің?",
+  "Ол сезімді өзің де мойындайсың ба?",
+  "Егер жүрегің сөйлей алса, бүгін не дер еді?",
+  "Өзіңе деген ең маңызды уәде не болар еді?",
+  "Сол уәдені бере аласың ба?",
+  "Осы кітапты ашқан кезде не сезіндің?",
+  "Қазір не сезіп отырсың?",
+  "Өзіңе бүгін не тілейсің?",
+  "Жүрегің саған рахмет деуін қалайды ма?",
+  "Өзіңді жақсы көруге бастауға дайынсың ба?"
+];
+
+const TOTAL = questions.length;
+let page = 1;
+let answers = JSON.parse(localStorage.getItem('ozine_answers') || '[]');
+while (answers.length < TOTAL) answers.push('');
+
+function show(id) {
+  ['cover','book','done'].forEach(s => {
+    const el = document.getElementById(s);
+    el.style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  el.style.display = 'flex';
+}
+
+function startBook() { page = 1; show('book'); render(); }
+function goHome() { show('cover'); }
+
+function render() {
+  const i = page - 1;
+  const pct = Math.round((page / TOTAL) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-text').textContent = page + ' / ' + TOTAL;
+  document.getElementById('q-label').textContent = '#' + page + ' СҰРАҚ';
+  document.getElementById('q-text').textContent = questions[i];
+  const box = document.getElementById('answer-box');
+  box.value = answers[i];
+  document.getElementById('saved-tag').style.display = answers[i] ? 'block' : 'none';
+  document.getElementById('next-btn').textContent = page === TOTAL ? 'Аяқталды ✓' : 'Келесі →';
+  drawLines();
+  box.focus();
+}
+
+function drawLines() {
+  const canvas = document.getElementById('line-canvas');
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.offsetWidth;
+  canvas.height = Math.max(480, wrap.offsetHeight);
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#1a2b25';
+  ctx.lineWidth = 1;
+  for (let y = 40; y < canvas.height; y += 40) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+  }
+}
+
+function saveAnswer() {
+  const i = page - 1;
+  answers[i] = document.getElementById('answer-box').value;
+  localStorage.setItem('ozine_answers', JSON.stringify(answers));
+  document.getElementById('saved-tag').style.display = answers[i] ? 'block' : 'none';
+}
+
+function go(dir) {
+  saveAnswer();
+  if (dir === -1 && page === 1) { goHome(); return; }
+  if (dir === 1 && page === TOTAL) { show('done'); return; }
+  page += dir;
+  render();
+}
+
+function toggleList() {
+  const el = document.getElementById('all-list');
+  const btn = document.querySelector('#cover .btn-secondary');
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    el.innerHTML = questions.map((q,i) =>
+      `<div><span>${i+1}.</span>${q}</div>`).join('');
+    btn.textContent = 'Жабу';
+  } else {
+    el.style.display = 'none';
+    btn.textContent = 'Барлық сұрақтарды көру';
+  }
+}
+
+function downloadAnswers() { document.getElementById('save-modal').classList.add('open'); }
+function closeModal() { document.getElementById('save-modal').classList.remove('open'); }
+
+function doDownload() {
+  let txt = '🌱 ӨЗІҢЕ ОРАЛУ — МЕНІҢ ЖАУАПТАРЫМ\n';
+  txt += '================================\n\n';
+  questions.forEach((q, i) => {
+    txt += `#${i+1}. ${q}\n`;
+    txt += (answers[i] || '(жауап берілмеді)') + '\n\n';
+  });
+  const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ozine_oralу_жауаптарым.txt';
+  a.click();
+  closeModal();
+}
+
+window.addEventListener('resize', () => { if (document.getElementById('book').style.display !== 'none') drawLines(); });
+</script>
+</body>
+</html>
